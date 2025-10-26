@@ -1,0 +1,140 @@
+   <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MindMaster</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <main class="landing">
+            <div class="overlay"></div>
+            <header class="brand">
+                <img src="logo.png" alt="MindMaster" class="logo" />
+                <h1>MindMaster</h1>
+                <p class="tagline">Entrena tu memoria. Diviértete. Supera tus marcas.</p>
+            </header>
+
+            <section class="hero">
+                <a class="btn play" href="Juego MindMaster/index.html">Jugar ahora</a>
+                <div class="cta-row">
+                    <a class="btn secondary" href="#como-jugar">Cómo jugar</a>
+                    <a class="btn neutral" href="Juego MindMaster/index.html#tablaPuntuaciones">Puntuaciones</a>
+                </div>
+            </section>
+
+            <!-- Audio de menu: loop lo-fi -->
+            <audio id="menuAudio" src="Juego MindMaster/audio/menuLoop.wav" loop></audio>
+            <button id="menuMute" class="btn neutral" style="position:fixed;top:18px;right:18px;border-radius:12px;padding:8px 12px;z-index:2000">🔈</button>
+
+            <section id="como-jugar" class="info">
+                <h2>¿Cómo jugar?</h2>
+                <p>Selecciona un nivel, descubre las parejas y suma puntos. Cuanto más rápido, mejor tu puntuación.</p>
+            </section>
+
+            <footer class="site-footer">
+                <p>&copy; <span id="year"></span> MindMaster — Hecho por Nahúm Madrid con ❤</p>
+            </footer>
+        </main>
+
+        <script>
+            // Añadir año dinámico
+            document.getElementById('year').textContent = new Date().getFullYear();
+        </script>
+        <script>
+            // Control de reproducción para menuAudio (fade in/out y mute)
+            (function(){
+                const audio = document.getElementById('menuAudio');
+                const btn = document.getElementById('menuMute');
+                let isMuted = localStorage.getItem('mindMasterMenuMuted') === 'true';
+
+                function fadeAudio(targetVol, time = 2000){
+                    if (!audio) return;
+                    const start = audio.volume;
+                    const diff = targetVol - start;
+                    const steps = 30;
+                    const stepTime = time / steps;
+                    let i = 0;
+                    const iv = setInterval(()=>{
+                        i++;
+                        audio.volume = Math.max(0, Math.min(1, start + diff * (i/steps)));
+                        if (i>=steps){ clearInterval(iv); }
+                    }, stepTime);
+                }
+
+                function tryPlay(){
+                    if (!audio || isMuted) return;
+                    audio.volume = 0;
+                    audio.play().then(()=>{
+                        fadeAudio(0.7, 2000);
+                        btn.textContent = '🔊';
+                    }).catch(()=>{
+                        // Autoplay bloqueado -> mostrar overlay visible para que el usuario active el audio
+                        const overlay = document.createElement('div');
+                        overlay.style.position = 'fixed';
+                        overlay.style.inset = '0';
+                        overlay.style.display = 'flex';
+                        overlay.style.alignItems = 'center';
+                        overlay.style.justifyContent = 'center';
+                        overlay.style.background = 'rgba(0,0,0,0.35)';
+                        overlay.style.zIndex = '3000';
+
+                        const playBtn = document.createElement('button');
+                        playBtn.textContent = '▶ Escuchar música del menú';
+                        playBtn.className = 'btn play';
+                        playBtn.style.padding = '14px 22px';
+                        playBtn.style.fontSize = '18px';
+
+                        playBtn.addEventListener('click', ()=>{
+                            audio.play().then(()=>{
+                                fadeAudio(0.7, 1200);
+                                btn.textContent = '🔊';
+                                document.body.removeChild(overlay);
+                            }).catch(()=>{
+                                // no action
+                            });
+                        });
+
+                        overlay.appendChild(playBtn);
+                        document.body.appendChild(overlay);
+                    });
+                }
+
+                // Manejar visibilidad de la página
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        if (audio && !isMuted && !audio.paused) {
+                            fadeAudio(0, 800);
+                            setTimeout(() => { try { audio.pause(); } catch(e){} }, 900);
+                        }
+                    } else if (!isMuted) {
+                        tryPlay();
+                    }
+                });
+
+                // Actualizar botón según estado
+                btn.textContent = isMuted ? '🔈' : '🔊';
+
+                btn.addEventListener('click', ()=>{
+                    if (!audio) return;
+                    if (isMuted){
+                        // unmute and fade in
+                        isMuted = false;
+                        localStorage.setItem('mindMasterMenuMuted', 'false');
+                        tryPlay();
+                    } else {
+                        // fade out and pause
+                        isMuted = true;
+                        localStorage.setItem('mindMasterMenuMuted', 'true');
+                        fadeAudio(0, 1200);
+                        setTimeout(()=>{ try{ audio.pause(); }catch(e){} }, 1400);
+                        btn.textContent = '🔈';
+                    }
+                });
+
+                // intentar reproducir al cargar si no está muteado
+                if (!isMuted) {
+                    tryPlay();
+                }
+            })();
+        </script>
