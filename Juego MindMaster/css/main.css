@@ -1,0 +1,324 @@
+/*VARIABLES*/
+:root {
+    --rowNum: 4;
+    --colNum: 4;
+    --gridHeight: 128px;
+    --gridWidht: 128px;
+}
+
+/*FUENTES*/
+@font-face {
+    font-family: 'good-times';
+    src: url('fonts/good_times/good_times_rg-webfont.eot');
+    src: url('fonts/good_times/good_times_rg-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/good_times/good_times_rg-webfont.woff2') format('woff2'),
+         url('fonts/good_times/good_times_rg-webfont.woff') format('woff'), 
+         url('fonts/good_times/good_times_rg.ttf') format('truetype'),      
+         url('fonts/good_times/good_times_rg-webfont.svg#goodtimes') format('svg');
+}
+
+html {
+    height: 100%;
+}
+
+/*CUERPO*/
+body {
+    position: relative;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../Imagen1.png');
+    background-size: cover;
+    background-position: center;
+    filter: blur(5px);
+    z-index: -1;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(167, 112, 239, 0.3);
+    z-index: -1;
+}
+
+/*CONTAINER ELEMENTS*/
+.container {
+    display: grid;
+    text-align: center;
+    gap: 20px;
+    padding: 30px 20px;
+    grid-template-areas: "numPartidas maxPuntos puntos cronometro"
+                         "baraja baraja baraja baraja";
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.numPartidas, .maxPuntos, .puntos, .reloj {    
+    font-family: 'good-times';
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+    transition: transform 0.3s ease;
+}
+
+.numPartidas:hover, .maxPuntos:hover, .puntos:hover, .reloj:hover {
+    transform: translateY(-3px);
+}
+
+/*PARTIDAS*/
+.numPartidas {
+    grid-area: numPartidas;
+    border-bottom: 3px solid #FDB99B;
+}
+
+/*PUNTOS*/
+.maxPuntos {
+    grid-area: maxPuntos;
+    border-bottom: 3px solid #CF8BF3;
+}
+
+.puntos {
+    grid-area: puntos;
+    border-bottom: 3px solid #A770EF;
+}
+
+/*CRONOMETRO*/
+.cronometro {
+    grid-area: cronometro;
+    border-bottom: 3px solid #8B4FD8;
+}
+
+.reloj {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-top: 5px;
+}
+
+/* TABLERO */
+.wrapper {
+    grid-area: baraja;
+    padding: 2%;
+
+    display: grid;
+    justify-content: center;
+    grid-template-rows: repeat(var(--rowNum), var(--gridHeight));
+    grid-template-columns: repeat(var(--colNum), var(--gridWidht));
+    gap: 20px;
+}
+
+/* CARTAS */
+.carta {
+    grid-column-start: auto;
+    grid-row-start: auto; 
+    
+    position: relative;
+    transform-style: preserve-3d;
+    transition: 1s;
+    width: var(--gridWidht);
+    height: var(--gridHeight);
+}
+
+/* IMAGEN FRONT CARTA */
+input[type='image'] {
+    background: white;    
+    border-radius: 12px;     
+}
+
+.face {
+    position: absolute;
+    width: var(--gridWidht);
+    height: var(--gridHeight);
+}
+
+.back {
+    transform: rotateY(0deg) scale(1);
+    backface-visibility: hidden;
+}
+
+/* ANIMACIONES CARTA GIRAR Y CRECER */
+.mostrar {
+    transform: rotateY(180deg) scale(1.12);
+    -ms-transform: rotateY(180deg) scale(1.12); /* IE 9  */
+    -moz-transform: rotateY(180deg) scale(1.12); /* Firefox */
+    -webkit-transform: rotateY(180deg) scale(1.12); /* Safari and Chrome */
+    -o-transform: rotateY(180deg) scale(1.12); /* Opera */
+}
+
+.ocultar {
+    transform: rotateY(0deg) scale(1);
+    -ms-transform: rotateY(0deg) scale(1); /* IE 9  */
+    -moz-transform: rotateY(0deg) scale(1); /* Firefox */
+    -webkit-transform: rotateY(0deg) scale(1); /* Safari and Chrome */
+    -o-transform: rotateY(0deg) scale(1); /* Opera */
+}
+
+.back input[type='image']:hover {
+    border: 2px solid darkviolet;    
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* BLOQUEO TABLERO */
+.wrapper.bloquear {
+    opacity: 0.8;
+}
+
+.bloquear input[type='image']:hover {
+    border: none;
+    box-shadow: none;
+}
+
+/* MODAL */
+.modalDialog {
+    display: block;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.hide {
+    display: none;
+}
+
+.modal-content {
+    width: 60%;
+    margin: 5% auto;
+    border-radius: 5px;
+    background: #fff;
+    text-align: center;
+
+    display: grid;
+    gap: 5px;
+}
+
+.modal-header {
+    padding-top: 3%;
+    font-family: 'good-times';
+    font-weight: bold;
+}
+
+.modal-body {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 10px;
+    padding: 3%;    
+}
+
+/*MODAL PUNTOS*/
+.modal-score-body {
+    display: grid;
+    justify-content: space-around;
+    padding: 2%;
+}
+
+.tabla {
+    grid-auto-flow: column;    
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.footer {
+    margin: 5% 5% 0 10%;
+    gap: 12px;
+}
+
+.titlePtos {
+    font-family: 'good-times';
+    font-size: small;
+}
+
+/*MODAL PARTIDAS*/
+.modal-tscore-body {
+    display: grid;
+    padding: 2%;
+}
+
+.tPartidas {
+    grid-auto-flow: column;    
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+}
+
+/*BOTONES*/
+.btn {
+  background-color: #fd932f;
+  border: none;
+  border-radius: 20px;
+  color: white;
+  padding: 7px 15px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 8px rgba(0,0,0,0.2);
+}
+
+/* Botón de Pausar */
+.btn.pause {
+    background-color: #FF9776;
+}
+
+.btn.pause:hover {
+    background-color: #FF8561;
+}
+
+/* Botón de Volver */
+.btn.back {
+    background-color: #8B4FD8;
+}
+
+.btn.back:hover {
+    background-color: #7B3FC8;
+}
+
+/* Botón de Silenciar */
+.btn.mute {
+    background-color: #B784E3;
+}
+
+.btn.mute:hover {
+    background-color: #A774D3;
+}
+
+.btn.cancel {
+    background-color: #FF6B6B;
+}
+
+.btn.cancel:hover {
+    background-color: #FF5252;
+}
+
+.btn.neutral {
+    background-color: #78909C;
+}
+
+.btn.neutral:hover {
+    background-color: #607D8B;
+}
