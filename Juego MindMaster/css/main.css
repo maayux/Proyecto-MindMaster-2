@@ -280,6 +280,14 @@ input[type='image'] {
     box-shadow: 0 5px 8px rgba(0,0,0,0.2);
 }
 
+.btn:medio {
+    background-color: #FFFF01;
+}
+
+.btn:dificil {
+    background-color: #FF0101;
+}
+
 /* Botón de Pausar */
 .btn.pause {
     background-color: #FF9776;
